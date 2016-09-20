@@ -11,7 +11,7 @@ get '/stations' do
   if(res.code != "200")
     return response.to_json
   end
-  js = jsopnify(res.body)
+  js = jsonify(res.body)
   stations = [];
   return parse(js, response)
 
@@ -23,7 +23,7 @@ get "/station/:station_id" do
   if(res.code != "200")
     return response.to_json
   end
-  js = jsopnify(res.body)
+  js = jsonify(res.body)
   st = parse(js, response)
   st[:raw] = js
   return st.to_json
@@ -35,7 +35,7 @@ get "/station/:station_id/messages" do
     if(res.code != "200")
       return response.to_json
     end
-    js = jsopnify(res.body)
+    js = jsonify(res.body)
     response = {version: 0.1, status: res.code};
     if(res.code != "200")
       return response.to_json
@@ -49,7 +49,7 @@ get "/trip/:trip_id" do
   if(res.code != "200")
     return response.to_json
   end
-  js = jsopnify(res.body)
+  js = jsonify(res.body)
   st = parse(js, response)
   st[:raw] = js
   return st.to_json
