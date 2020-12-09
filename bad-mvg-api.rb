@@ -1,6 +1,6 @@
 require 'sinatra'
 require 'net/http'
-require 'JSON'
+require 'json'
 before do
     headers "Content-Type" => "text/json charset=utf8"
 end
@@ -12,8 +12,7 @@ get '/stations' do
     return response.to_json
   end
   js = jsonify(res.body)
-  stations = [];
-  return parse(js, response)
+  return parse(js, response).to_json
 
 end
 
@@ -83,8 +82,7 @@ def parse(hash,response)
   someData = []
   messages = []
   hash.each do |x|
-    print x
-    if x[0] == 4 then
+    if x[0] == 4 then # 4 indicates status object
       response[:api_version] = x[1]
       response[:timestamp] = x[2]
     end
@@ -92,17 +90,17 @@ def parse(hash,response)
       station = {stationName: x[1],stationId: x[2],initState: x[3],latitude: x[4],longitude:x[5]}
       stations.push station
     end
-    if x[0] == 1 then
-      if x.length == 11 then
+    if x[0] == 1 then # 4 indicates station
+      if x.length == 11 then # Station in Tip Request
         line = {visitnumber: x[1], lineId: x[2], directionId: x[4], destinationName: x[5], tripid: x[8], estimatedtime: x[9],expiretime: x[10],  remainingMinutes:((x[9].to_i-response[:timestamp].to_i)/60000).to_i}
         lines.push line
       end
-      if x.length == 9 then
-        trip_stop = {stationName: x[1],stationId: x[2],latitude: x[3],longitude:x[4],visitnumber:[5],vehicleid:x[6], estimatedtime:x[7], expiretime:x[8],}
+      if x.length == 9 then # Station in Stations request
+        trip_stop = {stationName: x[1],stationId: x[2],latitude: x[3],longitude:x[4],visitnumber:x[5],vehicleid:x[6], estimatedtime:x[7], expiretime:x[8],}
         stations.push trip_stop
       end
     end
-    if x[0] == 2 then
+    if x[0] == 2 then # Message  
       if x.length == 6 then
         message = {messageId: x[1], priority: x[2], message: x[3], starttime: x[4], endtime: x[5] }
         messages.push message
