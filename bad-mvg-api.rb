@@ -12,7 +12,9 @@ get '/stations' do
     return response.to_json
   end
   js = jsonify(res.body)
-  return parse(js, response).to_json
+  st = parse(js, response)
+  st[:raw] = js
+  return st.to_json
 
 end
 
@@ -21,7 +23,7 @@ get "/station/:station_id" do
   response = {version: 0.1, status: res.code};
   if(res.code != "200")
     return response.to_json
-  end
+  end 
   js = jsonify(res.body)
   st = parse(js, response)
   st[:raw] = js
